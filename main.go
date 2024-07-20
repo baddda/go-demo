@@ -39,7 +39,7 @@ func main() {
 
 	log.Print("Listening...")
 
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type:", "text/plain; charset=utf-8")
 		io.WriteString(w, "OK")
 	})
@@ -47,8 +47,8 @@ func main() {
 	fileHandle := http.StripPrefix("/app/", http.FileServer(http.Dir("./public")))
 	apiCfg := apiConfig{0};
 	mux.Handle("/app/*", apiCfg.middlewareMetricsInc(fileHandle))
-	mux.Handle("/metrics", apiCfg.metrics())
-	mux.Handle("/reset", apiCfg.reset())
+	mux.Handle("POST /metrics", apiCfg.metrics())
+	mux.Handle("DELETE /reset", apiCfg.reset())
 
 
 	http.ListenAndServe(":8080", mux)
