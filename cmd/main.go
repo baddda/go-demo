@@ -2,16 +2,12 @@ package main
 
 import (
 	"net/http"
+	"tasko/internal/model"
 
 	"github.com/gin-gonic/gin"
 )
 
-type task struct {
-	ID          string `json:"id"`
-	Description string `json:"description"`
-}
-
-var tasks = []task{
+var tasks = []model.Task{
 	{ID: "1", Description: "Blue Train"},
 	{ID: "2", Description: "Jeru"},
 	{ID: "3", Description: "Sarah Vaughan and Clifford Brown"},
@@ -22,7 +18,7 @@ func getTasks(c *gin.Context) {
 }
 
 func postTasks(c *gin.Context) {
-	var newTask task
+	var newTask model.Task
 
 	if err := c.BindJSON(&newTask); err != nil {
 		return

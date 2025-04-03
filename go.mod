@@ -1,4 +1,4 @@
-module go-demo
+module tasko
 
 go 1.22.4
 
