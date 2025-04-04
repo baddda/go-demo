@@ -18,6 +18,12 @@ func GetTasks(c *gin.Context) {
 }
 
 func PostTask(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": r})
+		}
+	}()
+
 	var newTask model.Task
 
 	if err := c.BindJSON(&newTask); err != nil {
@@ -25,8 +31,7 @@ func PostTask(c *gin.Context) {
 	}
 
 	if newTask.Description == "" {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Description is required"})
-		return
+		panic("Description is required")
 	}
 
 	tasks = append(tasks, newTask)
