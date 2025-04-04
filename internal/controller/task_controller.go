@@ -24,6 +24,11 @@ func PostTask(c *gin.Context) {
 		return
 	}
 
+	if newTask.Description == "" {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Description is required"})
+		return
+	}
+
 	tasks = append(tasks, newTask)
 	c.IndentedJSON(http.StatusCreated, newTask)
 }

@@ -2,12 +2,14 @@ package router
 
 import (
 	"tasko/internal/controller"
+	"tasko/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+	router.Use(middleware.ErrorHandlerMiddleware())
 
 	// public := router.Group("/api")
 	// {
@@ -16,6 +18,7 @@ func SetupRouter() *gin.Engine {
 	// }
 
 	protected := router.Group("/api")
+
 	// protected.Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/tasks", controller.GetTasks)
