@@ -8,9 +8,9 @@ import (
 )
 
 var tasks = []model.Task{
-	{ID: "1", Description: "Blue Train"},
-	{ID: "2", Description: "Jeru"},
-	{ID: "3", Description: "Sarah Vaughan and Clifford Brown"},
+	{ID: "1", Description: "Buy bread"},
+	{ID: "2", Description: "Toast bread"},
+	{ID: "3", Description: "Eat bread"},
 }
 
 func GetTasks(c *gin.Context) {
