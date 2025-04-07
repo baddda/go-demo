@@ -10,6 +10,7 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(middleware.ErrorHandlerMiddleware())
+	router.Use(middleware.LoggingMiddleware())
 
 	// public := router.Group("/api")
 	// public.POST("/register", controllers.Register)
