@@ -13,6 +13,6 @@ func LoggingMiddleware() gin.HandlerFunc {
 		c.Next()
 		end := time.Now()
 		latency := end.Sub(start)
-		log.Printf("\n[%s] %s %s %v", c.Request.Method, c.Request.URL.Path, c.ClientIP(), latency, '\n')
+		log.Printf("\n[%s] %s %s %v\n", c.Request.Method, c.Request.URL.Path, c.ClientIP(), latency)
 	}
 }

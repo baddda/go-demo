@@ -13,7 +13,7 @@ import (
 func TestGetTasks(t *testing.T) {
 	router := router.SetupRouter()
 
-	req, err := http.NewRequest("GET", "/api/tasks", nil)
+	req, err := http.NewRequest("GET", "/api/tasks?isAdmin=1", nil)
 	assert.NoError(t, err)
 
 	rec := httptest.NewRecorder()
@@ -27,7 +27,7 @@ func TestPostTask(t *testing.T) {
 
 	newTask := `{"description": "New task"}`
 
-	req, err := http.NewRequest("POST", "/api/tasks", strings.NewReader(newTask))
+	req, err := http.NewRequest("POST", "/api/tasks?isAdmin=1", strings.NewReader(newTask))
 	assert.NoError(t, err)
 
 	rec := httptest.NewRecorder()

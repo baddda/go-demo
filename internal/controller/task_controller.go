@@ -7,14 +7,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var tasks = []model.Task{
+var tasksSample = []model.Task{
 	{ID: "1", Description: "Buy bread"},
 	{ID: "2", Description: "Toast bread"},
 	{ID: "3", Description: "Eat bread"},
 }
 
 func GetTasks(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, tasks)
+	taskCh := make(chan []model.Task)
+	errorsCh := make(chan error)
+
+	go func() {
+		tasks, err := getTasksFromDB()
+		if err != nil {
+			errorsCh <- err
+			return
+		}
+		taskCh <- tasks
+	}()
+
+	select {
+	case tasks := <-taskCh:
+		c.IndentedJSON(http.StatusOK, tasks)
+	case err := <-errorsCh:
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+}
+
+func getTasksFromDB() ([]model.Task, error) {
+	return tasksSample, nil
 }
 
 func PostTask(c *gin.Context) {
@@ -34,6 +55,6 @@ func PostTask(c *gin.Context) {
 		panic("Description is required")
 	}
 
-	tasks = append(tasks, newTask)
+	tasksSample = append(tasksSample, newTask)
 	c.IndentedJSON(http.StatusCreated, newTask)
 }

@@ -16,7 +16,7 @@ func TestServerRun(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	resp, err := http.Get("http://localhost:8080/api/tasks")
+	resp, err := http.Get("http://localhost:8080/api/tasks?isAdmin=1")
 	assert.NoError(t, err)
 	defer resp.Body.Close()
 
