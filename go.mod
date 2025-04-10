@@ -6,6 +6,7 @@ require github.com/gin-gonic/gin v1.10.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 )
 
