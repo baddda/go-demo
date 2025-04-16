@@ -31,7 +31,7 @@ func GetTasks(c *gin.Context) {
 
 	select {
 	case tasks := <-taskCh:
-		c.IndentedJSON(http.StatusOK, tasks)
+		c.JSON(http.StatusOK, tasks)
 	case err := <-errorsCh:
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
@@ -49,22 +49,18 @@ func getTasksFromDB() ([]model.Task, error) {
 }
 
 func PostTask(c *gin.Context) {
-	defer func() {
-		if r := recover(); r != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": r})
-		}
-	}()
-
 	var newTask model.Task
 
 	if err := c.BindJSON(&newTask); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	if newTask.Description == "" {
-		panic("Description is required")
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Description is required"})
+		return
 	}
 
 	tasksSample = append(tasksSample, newTask)
-	c.IndentedJSON(http.StatusCreated, newTask)
+	c.JSON(http.StatusCreated, newTask)
 }
