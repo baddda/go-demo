@@ -7,13 +7,16 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var DBCon *sql.DB
+
 func ConnectDatabase() {
-	db, err := sql.Open("postgres", "user=postgres password=postgres dbname=postgres sslmode=disable")
+	var err error
+	DBCon, err = sql.Open("postgres", "user=postgres password=postgres dbname=postgres sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = db.Ping()
+	err = DBCon.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}

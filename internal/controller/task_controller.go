@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 	"tasko/internal/model"
+	"tasko/internal/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,12 +33,19 @@ func GetTasks(c *gin.Context) {
 	case tasks := <-taskCh:
 		c.IndentedJSON(http.StatusOK, tasks)
 	case err := <-errorsCh:
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 }
 
 func getTasksFromDB() ([]model.Task, error) {
-	return tasksSample, nil
+	log.Println("Fetching tasks from DB" + strconv.FormatBool((util.DBCon == nil)))
+	rows, err := util.DBCon.Query("SELECT * FROM task")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return []model.Task{}, nil
 }
 
 func PostTask(c *gin.Context) {
