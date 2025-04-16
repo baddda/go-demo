@@ -1,9 +1,7 @@
 package controller
 
 import (
-	"log"
 	"net/http"
-	"strconv"
 	"tasko/internal/model"
 	"tasko/internal/util"
 
@@ -38,14 +36,27 @@ func GetTasks(c *gin.Context) {
 }
 
 func getTasksFromDB() ([]model.Task, error) {
-	log.Println("Fetching tasks from DB" + strconv.FormatBool((util.DBCon == nil)))
 	rows, err := util.DBCon.Query("SELECT * FROM task")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	return []model.Task{}, nil
+	var tasks []model.Task
+
+	for rows.Next() {
+		var task model.Task
+		if err := rows.Scan(&task.ID, &task.Description); err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
 }
 
 func PostTask(c *gin.Context) {
