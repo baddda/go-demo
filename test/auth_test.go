@@ -12,18 +12,6 @@ import (
 func TestAuthGranted(t *testing.T) {
 	router := router.SetupRouter()
 
-	req, err := http.NewRequest("GET", "/api/tasks", nil)
-	assert.NoError(t, err)
-
-	rec := httptest.NewRecorder()
-	router.ServeHTTP(rec, req)
-
-	assert.Equal(t, http.StatusUnauthorized, rec.Code)
-}
-
-func TestAuthNotGranted(t *testing.T) {
-	router := router.SetupRouter()
-
 	req, err := http.NewRequest("GET", "/api/tasks?isAdmin=1", nil)
 	assert.NoError(t, err)
 
@@ -31,4 +19,16 @@ func TestAuthNotGranted(t *testing.T) {
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
+func TestAuthNotGranted(t *testing.T) {
+	router := router.SetupRouter()
+
+	req, err := http.NewRequest("GET", "/api/tasks", nil)
+	assert.NoError(t, err)
+
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusUnauthorized, rec.Code)
 }
