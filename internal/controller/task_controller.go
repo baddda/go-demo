@@ -8,12 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var tasksSample = []model.Task{
-	{ID: "1", Description: "Buy bread"},
-	{ID: "2", Description: "Toast bread"},
-	{ID: "3", Description: "Eat bread"},
-}
-
 func GetTasks(c *gin.Context) {
 	taskCh := make(chan []model.Task)
 	errorsCh := make(chan error)
@@ -72,6 +66,11 @@ func PostTask(c *gin.Context) {
 		return
 	}
 
-	tasksSample = append(tasksSample, newTask)
+	err := util.DBCon.QueryRow("INSERT INTO task (description) VALUES ($1) RETURNING id", newTask.Description).Scan(&newTask.ID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	c.JSON(http.StatusCreated, newTask)
 }
