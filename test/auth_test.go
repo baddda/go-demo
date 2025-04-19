@@ -10,6 +10,7 @@ import (
 )
 
 func TestAuthGranted(t *testing.T) {
+	TestConnectDatabase(t)
 	router := router.SetupRouter()
 
 	req, err := http.NewRequest("GET", "/api/tasks?isAdmin=1", nil)
@@ -22,6 +23,7 @@ func TestAuthGranted(t *testing.T) {
 }
 
 func TestAuthNotGranted(t *testing.T) {
+	TestConnectDatabase(t)
 	router := router.SetupRouter()
 
 	req, err := http.NewRequest("GET", "/api/tasks", nil)
