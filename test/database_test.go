@@ -13,7 +13,6 @@ import (
 )
 
 func TestConnectDatabase(t *testing.T) {
-	// Initialize Docker container for PostgreSQL
 	exposedPort := "5433"
 	pool, resource := InitTestDocker(exposedPort)
 	defer func() {
