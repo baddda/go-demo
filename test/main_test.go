@@ -9,6 +9,7 @@ import (
 )
 
 func TestServerRun(t *testing.T) {
+	TestConnectDatabase(t)
 	router := router.SetupRouter()
 
 	go func() {
