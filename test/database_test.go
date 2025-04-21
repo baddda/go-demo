@@ -1,7 +1,6 @@
 package test
 
 import (
-	"database/sql"
 	"log"
 	"tasko/internal/util"
 	"testing"
@@ -10,22 +9,35 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+const (
+	DockerDBConnectionPort = "5432"
 )
 
 func TestConnectDatabase(t *testing.T) {
-	exposedPort := "5433"
-	pool, resource := InitTestDocker(exposedPort)
+	pool, resource := InitTestDocker(DockerDBConnectionPort)
 	defer func() {
 		if err := pool.Purge(resource); err != nil {
 			t.Fatalf("Could not purge resource: %s", err)
 		}
 	}()
 
-	util.DBCon, _ = sql.Open("postgres", "user=postgres password=postgres dbname=postgres sslmode=disable port="+exposedPort)
-	util.ConnectDatabase()
-
-	if err := util.DBCon.Ping(); err != nil {
+	var err error
+	util.DBCon, err = gorm.Open(postgres.Open("host=localhost user=postgres password=postgres dbname=postgres port="+DockerDBConnectionPort+" sslmode=disable"), &gorm.Config{})
+	if err != nil {
 		t.Fatalf("Failed to connect to the test database: %s", err)
+	}
+
+	sqlDB, err := util.DBCon.DB()
+	if err != nil {
+		t.Fatalf("Failed to get database instance: %s", err)
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		t.Fatalf("Failed to ping the test database: %s", err)
 	}
 }
 
@@ -36,7 +48,6 @@ func InitTestDocker(exposedPort string) (*dockertest.Pool, *dockertest.Resource)
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
-	// pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "postgres",
 		Tag:        "13",
@@ -46,7 +57,7 @@ func InitTestDocker(exposedPort string) (*dockertest.Pool, *dockertest.Resource)
 		},
 		ExposedPorts: []string{exposedPort},
 		PortBindings: map[docker.Port][]docker.PortBinding{
-			"5432/tcp": {
+			DockerDBConnectionPort + "/tcp": {
 				{HostIP: "0.0.0.0", HostPort: exposedPort},
 			},
 		},

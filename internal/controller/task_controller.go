@@ -30,26 +30,10 @@ func GetTasks(c *gin.Context) {
 }
 
 func getTasksFromDB() ([]model.Task, error) {
-	rows, err := util.DBCon.Query("SELECT * FROM task")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
 	var tasks []model.Task
-
-	for rows.Next() {
-		var task model.Task
-		if err := rows.Scan(&task.ID, &task.Description); err != nil {
-			return nil, err
-		}
-		tasks = append(tasks, task)
-	}
-
-	if err := rows.Err(); err != nil {
+	if err := util.DBCon.Find(&tasks).Error; err != nil {
 		return nil, err
 	}
-
 	return tasks, nil
 }
 
@@ -57,7 +41,7 @@ func PostTask(c *gin.Context) {
 	var newTask model.Task
 
 	if err := c.BindJSON(&newTask); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -66,8 +50,7 @@ func PostTask(c *gin.Context) {
 		return
 	}
 
-	err := util.DBCon.QueryRow("INSERT INTO task (description) VALUES ($1) RETURNING id", newTask.Description).Scan(&newTask.ID)
-	if err != nil {
+	if err := util.DBCon.Create(&newTask).Error; err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}

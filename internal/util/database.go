@@ -1,23 +1,22 @@
 package util
 
 import (
-	"database/sql"
 	"log"
+	"tasko/internal/model"
 
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var DBCon *sql.DB
+var DBCon *gorm.DB
 
 func ConnectDatabase() {
 	var err error
-	DBCon, err = sql.Open("postgres", "user=postgres password=postgres dbname=postgres sslmode=disable")
+	DBCon, err = gorm.Open(postgres.Open("user=postgres password=postgres dbname=postgres sslmode=disable"), &gorm.Config{})
+
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to connect to the database:", err)
 	}
 
-	err = DBCon.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
+	DBCon.AutoMigrate(&model.Task{})
 }
