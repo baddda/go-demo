@@ -13,9 +13,8 @@ func SetupRouter() *gin.Engine {
 	router.Use(middleware.LoggingMiddleware())
 	//router.Use(gin.Recovery())
 
-	// public := router.Group("/api")
-	// public.POST("/register", controllers.Register)
-	// public.POST("/login", controllers.Login)
+	public := router.Group("/api")
+	public.POST("/login", controller.Login)
 
 	protected := router.Group("/api")
 	protected.Use(middleware.AuthMiddleware())

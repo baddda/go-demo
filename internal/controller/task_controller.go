@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"tasko/internal/model"
 	"tasko/internal/util"
@@ -46,9 +47,12 @@ func PostTask(c *gin.Context) {
 	}
 
 	if newTask.Description == "" {
+		log.Println("PostTask description is required")
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Description is required"})
 		return
 	}
+
+	log.Printf("task %s", newTask)
 
 	if err := util.DBCon.Create(&newTask).Error; err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
